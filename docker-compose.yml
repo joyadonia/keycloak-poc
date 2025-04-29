@@ -38,6 +38,9 @@ services:
   blazorapp: 
     build: 
       context: C:\Users\030900002024\projects\Features\BSI\SOURCE.CONTAINER\Keycloak.Poc
+    privileged: true
+    cap_add: 
+      - NET_RAW
     container_name: blazorapp  # <- optional, but useful
     environment:
       - ASPNETCORE_ENVIRONMENT=DEVELOPMENT
@@ -51,5 +54,6 @@ services:
 networks:
   keycloak-poc:
     external: true
+    driver: bridge
   
  

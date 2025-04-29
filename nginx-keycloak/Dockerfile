@@ -1,5 +1,5 @@
 # Use the official Nginx image from Docker Hub
-FROM nginx:alpine
+FROM nginx:1.28.0-alpine
 
 # Remove default site config
 RUN rm /etc/nginx/conf.d/default.conf
