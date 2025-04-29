@@ -1,0 +1,55 @@
+version: '3'
+volumes:
+  keycloak-data:
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: keycloak  # <- optional, but useful
+    environment:
+      - KEYCLOAK_ADMIN=admin #KC_BOOTSTRAP_ADMIN_PASSWORD
+      - KEYCLOAK_ADMIN_PASSWORD=admin #KC_BOOTSTRAP_ADMIN_USERNAME
+      - DB_VENDOR=h2
+      - KC_PROXY=edge  # This tells Keycloak it's behind a reverse proxy
+      - KC_PROXY_HEADERS=xforwarded  # Forward the proxy address in HTTP headers
+      - KC_HTTP_ENABLED=true
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_PORT=8080
+    ports:
+      - "8080:8080"
+    networks:
+      - keycloak-poc
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+    command: start-dev  --http-port 8080 
+
+  nginx:
+    build:
+      context: ./nginx-keycloak
+    container_name: nginx  # <- optional, but useful
+    ports:
+     - "8081:80"  # Map host port 8081 to container port 80
+    depends_on:
+      - keycloak
+      - blazorapp
+    networks:
+      - keycloak-poc
+
+  blazorapp: 
+    build: 
+      context: C:\Users\030900002024\projects\Features\BSI\SOURCE.CONTAINER\Keycloak.Poc
+    container_name: blazorapp  # <- optional, but useful
+    environment:
+      - ASPNETCORE_ENVIRONMENT=DEVELOPMENT
+    ports: 
+      - "5000:8080"
+    depends_on:
+      - keycloak
+    networks:
+      - keycloak-poc
+
+networks:
+  keycloak-poc:
+    external: true
+  
+ 
