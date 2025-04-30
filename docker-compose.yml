@@ -54,6 +54,5 @@ services:
 networks:
   keycloak-poc:
     external: true
-    driver: bridge
   
  
