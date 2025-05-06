@@ -1,0 +1,29 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@inject ITokenService TokenService
+@attribute [Authorize]
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<h3>Access Token</h3>
+<p>@accessToken</p>
+<h3>Refresh Token</h3>
+<p>@refreshToken</p>
+
+
+@code {
+
+	private string accessToken;
+	private string refreshToken;
+
+	protected override async Task OnInitializedAsync()
+	{
+		accessToken = await TokenService.GetAccessTokenAsync();
+		refreshToken = await TokenService.GetRefreshTokenAsync();
+	}
+
+}

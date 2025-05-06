@@ -1,0 +1,35 @@
+﻿@page "/install"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles="install,all")]
+
+@inject ITokenService TokenService
+
+
+@rendermode InteractiveServer
+
+<PageTitle>Install</PageTitle>
+
+<h1>Install</h1>
+<p>This user can perform installation.</p>
+
+
+<h3>Access Token</h3>
+
+<p>@accessToken</p>
+<h3>Refresh Token</h3>
+<p>@refreshToken</p>
+
+
+@code {
+	private string accessToken;
+	private string refreshToken;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		accessToken = await TokenService.GetAccessTokenAsync();
+		refreshToken = await TokenService.GetRefreshTokenAsync();
+
+	}
+}
+

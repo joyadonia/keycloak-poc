@@ -1,0 +1,35 @@
+﻿@page "/licence"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ITokenService TokenService
+
+@attribute [Authorize(Roles = "licence,all")]
+
+@attribute [StreamRendering]
+
+<PageTitle>Licence</PageTitle>
+
+<h1>Licence</h1>
+<p>This user can manage licences.</p>
+
+
+<h3>Access Token</h3>
+
+<p>@accessToken</p>
+<h3>Refresh Token</h3>
+<p>@refreshToken</p>
+
+
+@code {
+
+	private string accessToken;
+	private string refreshToken;
+	private bool isAuthorized = false;
+
+	protected override async Task OnInitializedAsync()
+	{
+		accessToken = await TokenService.GetAccessTokenAsync();
+		refreshToken = await TokenService.GetRefreshTokenAsync();
+	}
+}

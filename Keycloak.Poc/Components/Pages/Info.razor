@@ -1,0 +1,34 @@
+﻿@page "/info"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles="info,alls")]
+
+@inject ITokenService TokenService
+
+
+@rendermode InteractiveServer
+
+<PageTitle>Info</PageTitle>
+
+<h1>Info</h1>
+
+<p>This user has read-only rights</p>
+<h3>Access Token</h3>
+
+<p>@accessToken</p>
+<h3>Refresh Token</h3>
+<p>@refreshToken</p>
+
+
+@code {
+	private string accessToken;
+	private string refreshToken;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		accessToken = await TokenService.GetAccessTokenAsync();
+		refreshToken = await TokenService.GetRefreshTokenAsync();
+
+	}
+}
+
