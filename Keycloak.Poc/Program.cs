@@ -44,8 +44,8 @@ builder.Services.AddAuthentication(options =>
                 // Local development settings
                 //options.Authority = "http://keycloak:8080/realms/YAMS";
                 //options.Authority = "http://host.docker.internal:8081/realms/YAMS";
-                options.Authority = "http://ngrp/realms/YAMS";
-                 //options.Authority = "http://localhost:9010/realms/YAMS";
+               options.Authority = "http://ngrp/realms/YAMS";
+             // options.Authority = "http://localhost:9010/realms/YAMS";
                 //options.Authority = "http://ngrp/realms/YAMS";
 
             }
@@ -57,7 +57,7 @@ builder.Services.AddAuthentication(options =>
 
             //TODO: read this from the config
             options.ClientId = "yams-client";
-            options.ClientSecret = "myvUpGC7HFu0i6uPdZeSqkIl4chDjp1X";
+            options.ClientSecret = "ungvFcRhrWXnJNaF3CTw15TdGic7Oh6a";
             options.ResponseType = OpenIdConnectResponseType.Code;
             options.Scope.Clear();
             options.Scope.Add("openid");
@@ -104,6 +104,8 @@ builder.Logging.AddConsole();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
+//app.UsePathBase("/yams");
+
 app.UseCors("AllowAllOrigins");
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
