@@ -71,14 +71,14 @@ builder.Services.AddAuthentication(options =>
             options.Events = new OpenIdConnectEvents
             {
                 OnTokenValidated = MapRoles,
-                // OnRedirectToIdentityProvider = context =>
-                // {
-                //     // Override the authority for redirect URIs going to the browser
-                //     context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress
-                //         .Replace("http://ngrp", "http://localhost:8080");
+                OnRedirectToIdentityProvider = context =>
+                {
+                    // Override the authority for redirect URIs going to the browser
+                    context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress
+                        .Replace("http://ngrp", "http://localhost:8080");
 
-                //     return Task.CompletedTask;
-                // }
+                    return Task.CompletedTask;
+                }
             };
         }
         catch (Exception ex)

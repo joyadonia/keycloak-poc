@@ -11,9 +11,10 @@ ENV KC_PROXY_HEADERS=xforwarded
 ENV KC_HTTP_ENABLED=true
 ENV KC_HOSTNAME_STRICT=false
 # check this out
-ENV KC_HOSTNAME_URL=http://ngrp
-ENV KC_HOSTNAME=http://ngrp
+ENV KC_HOSTNAME_URL=http://ngrp/keycloak
+ENV KC_HOSTNAME=http://ngrp/keycloak
 ENV KEYCLOAK_FRONTEND_URL=http://localhost:8080/keycloak
+ENV KEYCLOAK_ADMIN_URL=http://localhost:8080/keycloak
 ENV KC_HTTP_RELATIVE_PATH=/keycloak
 ENV KC_LOG_LEVEL=INFO
 ENV KC_HOSTNAME_STRICT_HTTPS=false
