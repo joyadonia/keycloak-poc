@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +35,12 @@ builder.Services.AddAuthentication(options =>
         options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 
     })
-    .AddCookie()
+    .AddCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        })  
     .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
         try
@@ -43,9 +50,8 @@ builder.Services.AddAuthentication(options =>
             {
                 // Local development settings
                 //options.Authority = "http://keycloak:8080/realms/YAMS";
-                //options.Authority = "http://host.docker.internal:8081/realms/YAMS";
-               options.Authority = "http://ngrp/realms/YAMS";
-             // options.Authority = "http://localhost:9010/realms/YAMS";
+             //options.Authority = "http://ngrp/realms/YAMS";
+             options.Authority = "http://localhost:9010/realms/YAMS";
                 //options.Authority = "http://ngrp/realms/YAMS";
 
             }
@@ -67,7 +73,11 @@ builder.Services.AddAuthentication(options =>
             options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
             options.TokenValidationParameters.RoleClaimType = "role";
             options.ClaimActions.MapJsonKey("role", "role");
-
+            //only for poc, enable in production
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false 
+            };
             options.Events = new OpenIdConnectEvents
             {
                 OnTokenValidated = MapRoles,
@@ -83,6 +93,10 @@ builder.Services.AddAuthentication(options =>
         }
         catch (Exception ex)
         {
+           Console.WriteLine(ex.ToString());
+            Console.WriteLine(ex.Message);
+            Console.WriteLine(ex.StackTrace);
+
         }
 
     });
@@ -104,7 +118,7 @@ builder.Logging.AddConsole();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
-//app.UsePathBase("/yams");
+app.UsePathBase("/yams");
 
 app.UseCors("AllowAllOrigins");
 
@@ -124,14 +138,22 @@ else
     // app.UseHsts();
 }
 // app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
+
+
 app.UseAntiforgery();
 app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
+//app.Map("/yams", subapp =>
+//{
+//    subapp.UsePathBase("/yams");
+//    subapp.UseRouting();
+//    subapp.UseEndpoints(endpoints => endpoints.MapBlazorHub("/yams"));
+//});
 app.Run();
 
 
@@ -156,6 +178,7 @@ Task MapRoles(TokenValidatedContext tokenValidatedContext)
     var logger = tokenValidatedContext.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
     var rolesInPrincipal = tokenValidatedContext.Principal.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value);
     logger.LogInformation("Roles mapped: {Roles}", string.Join(", ", rolesInPrincipal));
+    logger.LogInformation($"idToken of user: {idToken}");
 
     return Task.CompletedTask;
 }

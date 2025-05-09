@@ -21,7 +21,7 @@ namespace Keycloak.Poc.Controllers
                 return BadRequest();
             }
             var postLogoutRedirectUri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-            var keycloakLogoutUrl = $"http://localhost:9000/realms/YAMS/protocol/openid-connect/logout" +
+            var keycloakLogoutUrl = $"http://localhost:9010/realms/YAMS/protocol/openid-connect/logout" +
                                     $"?id_token_hint={idToken}" +
                                     $"&post_logout_redirect_uri={postLogoutRedirectUri}";
 

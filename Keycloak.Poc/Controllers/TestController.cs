@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 
 namespace Keycloak.Poc.Controllers
 {
@@ -10,7 +11,15 @@ namespace Keycloak.Poc.Controllers
         public IActionResult TestNginx([FromBody] string value)
         {
            Console.WriteLine($"The value ist {value}");
-           return Ok(); 
+           return Ok();
+        }
+
+        [HttpGet]
+        [Route("test")]
+        public  IActionResult TestGet()
+        {
+
+            return Ok("Succeeded");
         }
     }
 }
