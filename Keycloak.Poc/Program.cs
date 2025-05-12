@@ -50,8 +50,8 @@ builder.Services.AddAuthentication(options =>
             {
                 // Local development settings
                 //options.Authority = "http://keycloak:8080/realms/YAMS";
-             //options.Authority = "http://ngrp/realms/YAMS";
-             options.Authority = "http://localhost:9010/realms/YAMS";
+             options.Authority = "http://ngrp/realms/YAMS";
+             //options.Authority = "http://localhost:9010/realms/YAMS";
                 //options.Authority = "http://ngrp/realms/YAMS";
 
             }
