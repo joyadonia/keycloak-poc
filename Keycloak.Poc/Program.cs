@@ -38,8 +38,8 @@ builder.Services.AddAuthentication(options =>
     .AddCookie(options =>
         {
             options.Cookie.HttpOnly = true;
-            options.Cookie.SameSite = SameSiteMode.None;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.None;
         })  
     .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
@@ -49,9 +49,9 @@ builder.Services.AddAuthentication(options =>
             if (builder.Environment.IsDevelopment())
             {
                 // Local development settings
-                //options.Authority = "http://keycloak:8080/realms/YAMS";
-             options.Authority = "http://ngrp/realms/YAMS";
-             //options.Authority = "http://localhost:9010/realms/YAMS";
+                // options.Authority = "http://keycloak:8080/realms/YAMS";
+                 options.Authority = "http://ngrp/realms/YAMS";
+            // options.Authority = "http://localhost:9010/realms/YAMS";
                 //options.Authority = "http://ngrp/realms/YAMS";
 
             }
@@ -81,14 +81,14 @@ builder.Services.AddAuthentication(options =>
             options.Events = new OpenIdConnectEvents
             {
                 OnTokenValidated = MapRoles,
-                OnRedirectToIdentityProvider = context =>
-                {
-                    // Override the authority for redirect URIs going to the browser
-                    context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress
-                        .Replace("http://ngrp", "http://localhost:8080");
+                // OnRedirectToIdentityProvider = context =>
+                // {
+                //     // Override the authority for redirect URIs going to the browser
+                //     context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress
+                //         .Replace("http://ngrp", "http://localhost:8080");
 
-                    return Task.CompletedTask;
-                }
+                //     return Task.CompletedTask;
+                // }
             };
         }
         catch (Exception ex)
