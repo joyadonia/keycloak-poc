@@ -20,11 +20,11 @@ namespace Keycloak.Poc.Controllers
             {
                 return BadRequest();
             }
-            var postLogoutRedirectUri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-            var keycloakLogoutUrl = $"http://localhost:9010/realms/YAMS/protocol/openid-connect/logout" +
+            var postLogoutRedirectUri = $"{Request.Scheme}://{Request.Host}{Request.PathBase}/yams";
+            var keycloakLogoutUrl = $"http://ngrp/realms/YAMS/protocol/openid-connect/logout" +
                                     $"?id_token_hint={idToken}" +
                                     $"&post_logout_redirect_uri={postLogoutRedirectUri}";
-
+            Console.WriteLine($"postLogoutRedirectUri {postLogoutRedirectUri}");
             return SignOut(
                 new AuthenticationProperties
                 {

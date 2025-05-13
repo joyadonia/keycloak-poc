@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -39,7 +38,10 @@ builder.Services.AddAuthentication(options =>
         {
             options.Cookie.HttpOnly = true;
             options.Cookie.SameSite = SameSiteMode.Lax;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.None;// set no nonce
+            options.Cookie.Path = "/yams"; // Ensure it's available at root
+
+
         })  
     .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
     {
@@ -49,10 +51,12 @@ builder.Services.AddAuthentication(options =>
             if (builder.Environment.IsDevelopment())
             {
                 // Local development settings
-                // options.Authority = "http://keycloak:8080/realms/YAMS";
-                 options.Authority = "http://ngrp/realms/YAMS";
-            // options.Authority = "http://localhost:9010/realms/YAMS";
-                //options.Authority = "http://ngrp/realms/YAMS";
+                options.Authority = "http://ngrp/realms/YAMS";
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
+
+                options.NonceCookie.SameSite = SameSiteMode.Lax;
+                options.NonceCookie.SecurePolicy = CookieSecurePolicy.None;
 
             }
             else
@@ -60,7 +64,7 @@ builder.Services.AddAuthentication(options =>
                 // Podman container settings, ngnix url 
                 options.Authority = "http://keycloak:8080/realms/YAMS";
             }
-
+           
             //TODO: read this from the config
             options.ClientId = "yams-client";
             options.ClientSecret = "ungvFcRhrWXnJNaF3CTw15TdGic7Oh6a";
@@ -73,6 +77,7 @@ builder.Services.AddAuthentication(options =>
             options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
             options.TokenValidationParameters.RoleClaimType = "role";
             options.ClaimActions.MapJsonKey("role", "role");
+
             //only for poc, enable in production
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -80,15 +85,7 @@ builder.Services.AddAuthentication(options =>
             };
             options.Events = new OpenIdConnectEvents
             {
-                OnTokenValidated = MapRoles,
-                // OnRedirectToIdentityProvider = context =>
-                // {
-                //     // Override the authority for redirect URIs going to the browser
-                //     context.ProtocolMessage.IssuerAddress = context.ProtocolMessage.IssuerAddress
-                //         .Replace("http://ngrp", "http://localhost:8080");
-
-                //     return Task.CompletedTask;
-                // }
+                OnTokenValidated = MapRoles
             };
         }
         catch (Exception ex)
@@ -135,11 +132,13 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // app.UseHsts();
+    app.UseHsts();
 }
 // app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -148,12 +147,7 @@ app.UseAntiforgery();
 app.MapControllers();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-//app.Map("/yams", subapp =>
-//{
-//    subapp.UsePathBase("/yams");
-//    subapp.UseRouting();
-//    subapp.UseEndpoints(endpoints => endpoints.MapBlazorHub("/yams"));
-//});
+
 app.Run();
 
 
