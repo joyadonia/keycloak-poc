@@ -51,7 +51,7 @@ builder.Services.AddAuthentication(options =>
             if (builder.Environment.IsDevelopment())
             {
                 // Local development settings
-                options.Authority = "http://ngrp/realms/YAMS";
+                options.Authority = "http://ngrp/keycloak/realms/YAMS";
                 options.CorrelationCookie.SameSite = SameSiteMode.Lax;
                 options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.None;
 
